@@ -1,0 +1,25 @@
+@media (min-width: 500px) {
+  .Menu {
+    background-color: transparent;
+    list-style: none;
+    display: flex;
+    flex-flow: row;
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    align-items: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .Menu {
+    background-color: transparent;
+    list-style: none;
+    display: flex;
+    flex-flow: column;
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    align-items: center;
+  }
+}
