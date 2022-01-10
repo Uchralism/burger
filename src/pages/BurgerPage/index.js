@@ -1,47 +1,40 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
 import Burger from '../../components/Burger';
 import './style.module.css';
 import BuildControls from '../../components/BuildControls';
 import Modal from '../../components/General/Modal';
 import OrderSummary from '../../components/OrderSummary';
-import Spinner from '../../components/General/Spinner';
 
-class BurgerPage extends Component {
+const BurgerPage = props => {
+    const [confirmOrder, setConfirmOrder] = useState(false);
 
-    state = {
-        confirmOrder: false
-    };
-
-    continueOrder = () => {
-        this.props.history.push('/ship');
+    const continueOrder = () => {
+        props.history.push('/ship');
     }
 
-    showConfirmModal = () => {
-        this.setState({confirmOrder: true});
+    const showConfirmModal = () => {
+        setConfirmOrder(true);
     };
 
-    closeConfirmModal = () => {
-        this.setState({confirmOrder: false});
+    const closeConfirmModal = () => {
+        setConfirmOrder(false);
     };    
-
-    render() {
         
         return (
             <div>
-                <Modal closeConfirmModal={this.closeConfirmModal} show={this.state.confirmOrder}>
-                    {this.state.loading ? ( <Spinner /> ) : ( <OrderSummary 
-                        onCancel = {this.closeConfirmModal} 
-                        onContinue = {this.continueOrder}/> )}
+                <Modal closeConfirmModal={closeConfirmModal} show={confirmOrder}>
+                    <OrderSummary 
+                        onCancel = {closeConfirmModal} 
+                        onContinue = {continueOrder}/>
                 </Modal>
                 <Burger />
                 <BuildControls 
-                    showConfirmModal = {this.showConfirmModal}
-                    closeConfirmModal = {this.closeConfirmModal}
+                    showConfirmModal = {showConfirmModal}
+                    closeConfirmModal = {closeConfirmModal}
                 />
             </div>
         )
     }
-}
 
 export default BurgerPage;

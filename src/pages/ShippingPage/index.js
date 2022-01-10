@@ -6,28 +6,28 @@ import Button from '../../components/General/Button';
 import css from './style.module.css';
 import { connect } from 'react-redux';
 
-class ShippingPage extends React.Component {
+const ShippingPage = props => {
 
-    cancelOrder = () => {
-        this.props.history.push('/');
+    const cancelOrder = () => {
+        props.history.push('/');
     }
 
-    showContactData = () => {
-        this.props.history.replace('/ship/contact');
+    const showContactData = () => {
+        props.history.replace('/ship/contact');
     }
 
-    render() {
-        return <div className={css.ShippingPage}>
+        return (
+        <div className={css.ShippingPage}>
             <p style={{fontSize:'26px'}}><strong>Your order information</strong></p>
-            <p>Order total amount : <strong>{this.props.price}₮</strong></p>
+            <p>Order total amount : <strong>{props.price}₮</strong></p>
             <Burger />
-            <Button clicked={this.cancelOrder} btnType='Danger' text='Cancel Order' />
-            <Button clicked={this.showContactData} btnType='Success' text='Enter order address' />
+            <Button clicked={cancelOrder} btnType='Danger' text='Cancel Order' />
+            <Button clicked={showContactData} btnType='Success' text='Enter order address' />
             <Route path={'/ship/contact'}>
                 <ContactData />
             </Route>
         </div>
-    }
+        )
 }
 
 const mapStateToProps = state => {

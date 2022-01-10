@@ -1,10 +1,9 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import css from  './style.module.css';
 
 import Toolbar from '../../components/Toolbar';
 import BurgerPage from '../BurgerPage';
 import SideBar from '../../components/Sidebar';
-import { Component } from 'react/cjs/react.production.min';
 import OrderPage from '../OrderPage';
 import { Switch, Route } from 'react-router-dom';
 import ShippingPage from '../ShippingPage';
@@ -15,40 +14,34 @@ import Logout from '../../components/Logout';
 import { Redirect } from 'react-router-dom';
 import * as actions from '../../redux/actions/LoginActions';
 
-class App extends Component {
-  state = {
-    showSideBar: false
+const App = props => {
+  const [showSideBar, setShowSidebar] = useState(false);
+
+  const toggleSideBar = () => {
+    setShowSidebar(prevShow => !prevShow)
   };
 
-  toggleSideBar = () => {
-    this.setState(prevState => {
-      return {showSideBar: !prevState.showSideBar}
-    });
-  };
-
-  componentDidMount = () => {
+  useEffect(() => {
     const token = localStorage.getItem('token');
     const userID = localStorage.getItem('userID');
     const expireDate = new Date(localStorage.getItem('expireDate'));
-    const refreshToken = localStorage.getItem('refreshToken');
 
     if(token) {
       if(expireDate > new Date().getTime()) {
-        this.props.autoLogin(token, userID);
-        this.props.autoLogout(expireDate.getTime() - new Date().getTime());
+        props.autoLogin(token, userID);
+        props.AutoLogout(expireDate.getTime() - new Date().getTime());
       } else {
-        this.props.Logout();
+        props.Logout();
       }
     }
-  }
+  }, []);
 
-  render () {
     return (
     <div>
-      <Toolbar toggleSideBar={this.toggleSideBar}/>
-      <SideBar showSideBar={this.state.showSideBar} toggleSideBar={this.toggleSideBar} closeConfirmModal={this.state.closeConfirmModal}/>
+      <Toolbar toggleSideBar={toggleSideBar}/>
+      <SideBar showSideBar={showSideBar} toggleSideBar={toggleSideBar} closeConfirmModal={props.closeConfirmModal}/>
       <main className={css.Content}>
-        {this.props.userID ? (
+        {props.userID ? (
             <Switch>
               <Route path="/orders" component={OrderPage} /> 
               <Route path="/ship" component={ShippingPage} />  
@@ -64,7 +57,7 @@ class App extends Component {
         )}
       </main>
     </div>
-    )}
+    )
 }
 
 const mapStateToProps = state => {

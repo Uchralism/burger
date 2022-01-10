@@ -1,60 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '../General/Button';
 import css from './style.module.css';
 import Spinner from '../General/Spinner';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
 import * as actions from '../../redux/actions/OrderActions';
-class ContactData extends React.Component {
-    state = {
-        order_address: {
-            name : null,
-            city : null,
-            street : null
+const ContactData  = props => {
+    const [name, setName] = useState();
+    const [city, setCity] = useState();
+    const [street, setStreet] = useState();    
+
+    useEffect(() => {
+        if(props.newOrderStatus.finished && !props.newOrderStatus.error) {
+        props.history.push("/orders");
         }
+
+        return () => {
+            console.log('cleariin.....');
+            props.clearOrder();
+        }
+    }, [props.newOrderStatus.finished]);
+
+    const changeName = (e) => {
+        setName(e.target.value);
+    };
+    const changeStreet = (e) => {
+        setStreet(e.target.value);
+    };
+    const changeCity = (e) => {
+        setCity(e.target.value);
     };
 
-    changeName = (e) => {
-        this.setState({name: e.target.value})
-    };
-    changeStreet = (e) => {
-        this.setState({street: e.target.value})
-    };
-    changeCity = (e) => {
-        this.setState({city: e.target.value})
-    };    
-
-    componentDidUpdate() {
-        if(this.props.newOrderStatus.finished && !this.props.newOrderStatus.error)
-        this.props.history.push("/orders");
-    }
-
-    saveOrder = () => {
+    const saveOrder = () => {
         const order = {
-            userID: this.props.userID,
-            orts: this.props.ingredients,
-            dun: this.props.price,
+            userID: props.userID,
+            orts: props.ingredients,
+            dun: props.price,
             order_address: {
-                name: this.state.name,
-                city: this.state.city,
-                street: this.state.street
+                name,
+                city,
+                street
             }
         };
 
-        this.props.SaveOrderAction(order);
+        props.SaveOrderAction(order);
     }
 
-    render() {
-        return <div className={css.ContactData}>
+        return (
+        <div className={css.ContactData}>
             <div>
-                {this.props.newOrderStatus.error && `Order Has Been Errorred : ${this.props.newOrderStatus.error}`}
+                {props.newOrderStatus.error && `Order Has Been Errorred : ${props.newOrderStatus.error}`}
             </div>
-            {this.props.newOrderStatus.saving ? <Spinner /> : (<div><input onChange={this.changeName} type="text" name='name' placeholder='Your Name' />
-            <input onChange={this.changeStreet} type="text" name='street' placeholder='Your Address' />
-            <input onChange={this.changeCity} type="text" name='city' placeholder='Your City' />
-            <Button text="Order Send" btnType='Success' clicked={this.saveOrder} /></div>)}
+            {props.newOrderStatus.saving ? <Spinner /> : (<div><input onChange={changeName} type="text" name='name' placeholder='Your Name' />
+            <input onChange={changeStreet} type="text" name='street' placeholder='Your Address' />
+            <input onChange={changeCity} type="text" name='city' placeholder='Your City' />
+            <Button text="Order Send" btnType='Success' clicked={saveOrder} /></div>)}
         </div>
-    }
+        )
 }
 
 const mapStateToProps = state => {
@@ -68,7 +70,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        SaveOrderAction: (OrderInfo) => dispatch(actions.saveOrder(OrderInfo))
+        SaveOrderAction: (OrderInfo) => dispatch(actions.saveOrder(OrderInfo)),
+        clearOrder: () => dispatch(actions.clearOrder())
     }
 }
 

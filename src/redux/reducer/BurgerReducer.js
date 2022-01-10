@@ -40,6 +40,8 @@ const reducer = (state = initialState, action) => {
             purchasing: newPrice > 1000
             //purchasing: newPrice > 1000 ? true : false
         }
+    } else if(action.type === 'CLEAR_ORDER'){
+        return initialState;
     }
     return state;
 }

@@ -49,10 +49,18 @@ const reducer = (state = initialState, action) => {
         case "SAVE_ORDER_ERROR" : return {
             ...state,
             newOrder: {
-                ...state.newOrder,
                 saving: false,
-                finished: true,
-                error: action.error
+                finished: false,
+                error: null
+            }
+        };
+
+        case "CLEAR_ORDER" : return {
+            ...state,
+            newOrder: {
+                saving: false,
+                finished: false,
+                error: null
             }
         };
 
