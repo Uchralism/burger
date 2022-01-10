@@ -1,15 +1,12 @@
-import React from 'react';
-
+import React, { useContext } from 'react';
 import BurgerIngredient from '../BurderIngredient';
-
 import css from './style.module.css';
-
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
+import BurgerContext from '../../context/BurgerContext';
 
 const Burger = (props) => {
+    const burgerContext = useContext(BurgerContext);
 
-    const items = Object.entries(props.orts);
+    const items = Object.entries(burgerContext.burgerData.ingredients);
     
     let content = [];
 
@@ -19,7 +16,7 @@ const Burger = (props) => {
         }
     });
 
-    if(content.length === 0) content = <p>Hachirtai talhniihaa ortsiig songono uu...</p>
+    if(content.length === 0) content = <p>Please select your Burger ingredients ...</p>
 
     return (
         <div className={css.Burger}>
@@ -30,10 +27,4 @@ const Burger = (props) => {
     );
 }
 
-const mapStateToProps = state => {
-    return {
-        orts: state.BurgerReducer.ingredients
-    }
-}
-
-export default connect(mapStateToProps)(withRouter(Burger));
+export default Burger;

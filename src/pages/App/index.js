@@ -1,20 +1,32 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, Suspense, useContext } from 'react';
 import css from  './style.module.css';
-
 import Toolbar from '../../components/Toolbar';
-import BurgerPage from '../BurgerPage';
 import SideBar from '../../components/Sidebar';
-import OrderPage from '../OrderPage';
 import { Switch, Route } from 'react-router-dom';
 import ShippingPage from '../ShippingPage';
 import LoginPage from '../LoginPage';
-import SignupPage from '../SignupPage';
-import { connect } from 'react-redux';
 import Logout from '../../components/Logout';
 import { Redirect } from 'react-router-dom';
-import * as actions from '../../redux/actions/LoginActions';
+import { BurgerStore } from '../../context/BurgerContext';
+import { OrderStore } from '../../context/OrderContext';
+import UserContext from '../../context/UserContext';
+
+const BurgerPage = React.lazy(() => {
+  return import("../BurgerPage");
+})
+
+const OrderPage = React.lazy(() => {
+  return import("../OrderPage");
+})
+
+const SignupPage = React.lazy(() => {
+  return import("../SignupPage");
+})
 
 const App = props => {
+
+  const userCtx = useContext(UserContext);
+
   const [showSideBar, setShowSidebar] = useState(false);
 
   const toggleSideBar = () => {
@@ -25,13 +37,15 @@ const App = props => {
     const token = localStorage.getItem('token');
     const userID = localStorage.getItem('userID');
     const expireDate = new Date(localStorage.getItem('expireDate'));
+    const refreshToken = new Date(localStorage.getItem('refreshToken'));
 
     if(token) {
       if(expireDate > new Date().getTime()) {
-        props.autoLogin(token, userID);
-        props.AutoLogout(expireDate.getTime() - new Date().getTime());
+        userCtx.loginUserSuccess(token, userID, expireDate, refreshToken);
+        //serCtx.autoLogout(expireDate.getTime() - new Date().getTime());
+        userCtx.autoTokenRefresh(expireDate.getTime() - new Date().getTime());
       } else {
-        props.Logout();
+        userCtx.logout();
       }
     }
   }, []);
@@ -41,37 +55,37 @@ const App = props => {
       <Toolbar toggleSideBar={toggleSideBar}/>
       <SideBar showSideBar={showSideBar} toggleSideBar={toggleSideBar} closeConfirmModal={props.closeConfirmModal}/>
       <main className={css.Content}>
-        {props.userID ? (
-            <Switch>
-              <Route path="/orders" component={OrderPage} /> 
-              <Route path="/ship" component={ShippingPage} />  
-              <Route path="/logout" component={Logout} />   
-              <Route path="/" component={BurgerPage} /> 
-            </Switch>
-        ) : (
-          <Switch>
-            <Route path="/login" component={LoginPage} />   
-            <Route path="/signup" component={SignupPage} /> 
-            <Redirect to="/login" />
-          </Switch>
-        )}
+        <BurgerStore>
+          <Suspense fallback={<div>Please wait a moment ...</div>}>
+            {userCtx.state.userID ? (
+                <Switch>
+                  <Route path="/orders">
+                    <OrderStore>
+                      <OrderPage />
+                    </OrderStore>
+                  </Route>   
+                  <Route path="/logout" component={Logout} />
+                  <Route path="/ship" component={ShippingPage} />   
+                  <Route path="/" component={BurgerPage} />
+                </Switch>
+            ) : (
+              <Switch>
+                <Route path="/login" component={LoginPage} />   
+                <Route path="/signup" component={SignupPage} /> 
+                <Redirect to="/login" />
+              </Switch>
+            )}
+          </Suspense>
+        </BurgerStore>
       </main>
     </div>
     )
 }
 
-const mapStateToProps = state => {
-  return {
-    userID: state.SignupReducer.userID
-  }
-}
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     autoLogin: (token, userID) => dispatch(actions.LoginUserSuccess(token, userID))
+//   }
+// }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    autoLogin: (token, userID) => dispatch(actions.LoginUserSuccess(token, userID)),
-    Logout: () => dispatch(actions.LogOut()),
-    AutoLogout: (ms) => dispatch(actions.autoLogout(ms))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

@@ -31,7 +31,6 @@ const BurgerPage = props => {
                 <Burger />
                 <BuildControls 
                     showConfirmModal = {showConfirmModal}
-                    closeConfirmModal = {closeConfirmModal}
                 />
             </div>
         )

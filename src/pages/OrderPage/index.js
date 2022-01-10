@@ -1,36 +1,24 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useContext} from 'react';
 import Spinner from '../../components/General/Spinner';
 import Order from '../../components/Order';
-import { connect } from 'react-redux';
-import * as actions from '../../redux/actions/OrderActions';
+import OrderContext from '../../context/OrderContext';
+import UserContext from '../../context/UserContext';
 
 const OrderPage = props => {
+    const orderContext = useContext(OrderContext);
+    const userCtx = useContext(UserContext);
+
     useEffect(() => {
-        props.loadOrders(props.userID);
+        orderContext.loadOrderData(userCtx.state.userID, userCtx.state.token);
     }, []);
 
-        return (
+    return (
         <div>
-            {props.loading ? <Spinner /> : props.orders.map(el => 
+            {orderContext.state.loading ? <Spinner /> : orderContext.state.orders.map(el => 
                 <Order key={el[0]} order={el[1]} />
             )}
         </div>
     )
 }
 
-const mapStateToProps = state => {
-    return {
-        orders: state.OrderReducer.orders,
-        loading: state.OrderReducer.loading,
-        userID: state.SignupReducer.userID
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        loadOrders: (userID) => dispatch(actions.loadOrders(userID)),
-        clearOrder: () => dispatch(actions.clearOrder())
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(OrderPage);
+export default OrderPage;
