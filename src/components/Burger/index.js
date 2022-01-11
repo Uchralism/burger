@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import BurgerIngredient from '../BurderIngredient';
 import css from './style.module.css';
 import BurgerContext from '../../context/BurgerContext';
@@ -18,13 +18,16 @@ const Burger = (props) => {
 
     if(content.length === 0) content = <p>Please select your Burger ingredients ...</p>
 
-    return (
-        <div className={css.Burger}>
-            <BurgerIngredient type="bread-top"/>
-            {content}
-            <BurgerIngredient type="bread-bottom"/>
-        </div>
-    );
+    return useMemo(() => {
+        console.log("Burger rendered ....");
+        return (
+            <div className={css.Burger}>
+                <BurgerIngredient type="bread-top"/>
+                {content}
+                <BurgerIngredient type="bread-bottom"/>
+            </div>
+        );
+    }, [burgerContext.burgerData.ingredients])
 }
 
 export default Burger;

@@ -41,6 +41,10 @@ export const BurgerStore = props => {
                 });
     };
 
+    const toggle = () => {
+        setBurgerData({ ...burgerData, saving: !burgerData.saving})
+    }
+
     const clearBurger = () => {
         setBurgerData(initialState);
     }
@@ -71,7 +75,7 @@ export const BurgerStore = props => {
     }
 
     return (
-        <BurgerContext.Provider value={{burgerData, addIngredient, removeIngredient, saveBurger, clearBurger}}>
+        <BurgerContext.Provider value={{burgerData, addIngredient, removeIngredient, saveBurger, clearBurger, toggle}}>
             {props.children}
         </BurgerContext.Provider>
     )
